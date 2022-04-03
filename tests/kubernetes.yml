@@ -1,0 +1,66 @@
+---
+# Deployment of hello:latest
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello
+  labels:
+    app: hello
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+    spec:
+      containers:
+      - name: hello
+        image: hello:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+...
+---
+# Add service to expose the deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello
+  labels:
+    app: hello
+  spec:
+    ports:
+    - port: 80
+      targetPort: 80
+    selector:
+      app: hello
+...
+---
+# Add ingress to expose the service
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: hello
+spec:
+  rules:
+  - host: hello.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: hello
+          servicePort: 80
+...

@@ -1,0 +1,12 @@
+
+stages:
+  - sanity
+  - build
+
+# Build a container image
+
+- stage: build
+  tags:
+    - latest
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
